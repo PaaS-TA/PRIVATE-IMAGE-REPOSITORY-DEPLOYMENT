@@ -1,0 +1,14 @@
+# STEMCELL
+stemcell_os: "ubuntu-trusty"
+stemcell_version: "3586.26"
+stemcell_alias: "trusty"
+
+# VM_TYPE
+vm_type_small: "small"
+
+# NETWORK service_private
+private_networks_name: "default"
+azs: ["z1"]
+
+# PERSISTENT_DISK_TYPE
+persistent_disk_type_small: "1GB"

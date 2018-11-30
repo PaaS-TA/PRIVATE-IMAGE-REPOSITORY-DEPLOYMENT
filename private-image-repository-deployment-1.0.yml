@@ -1,0 +1,52 @@
+---
+name: private-image-repository                      # 서비스 배포이름(필수) bosh deployments 로 확인 가능한 이름
+#director_uuid: <%= `bosh status --uuid` %>                  # Director UUID을 입력(필수) bosh status 명령으로 확인 가능
+director_uuid: <%= `bosh int <(bosh environment --json) --path=/Tables/0/Rows/0/uuid` %> # FOR BOSH 2.0
+
+releases:
+- name: private-image-repository-release                   # 서비스 릴리즈 이름(필수) bosh releases로 확인 가능
+  version: latest                                              # 서비스 릴리즈 버전(필수):latest 시 업로드된 서비스 릴리즈 최신버전
+  url: file://./releases/private-image-repository-release.tgz
+
+stemcells:
+- alias: ((stemcell_alias))
+  os: ((stemcell_os))
+  version: ((stemcell_version))
+
+update:
+  canaries: 1                                               # canary 인스턴스 수(필수)
+  canary_watch_time: 5000-120000                            # canary 인스턴스가 수행하기 위한 대기 시간(필수)
+  update_watch_time: 5000-120000                            # non-canary 인스턴스가 수행하기 위한 대기 시간(필수)
+  max_in_flight: 1                                          # non-canary 인스턴스가 병렬로 update 하는 최대 개수(필수)
+  serial: false
+
+instance_groups:
+- name: private-image-repository
+  instances: 1
+  networks:                     # 네트워크 블록에 나열된 각 서브 블록이 참조 할 수있는 작업이 네트워크 구성을 지정, 네트워크 구성은 네트워크 담당자에게 문의 하여 작성 요망
+  - name: ((private_networks_name))
+  azs: ((azs))
+  vm_type: small
+  stemcell: ((stemcell_alias))
+  persistent_disk_type: ((persistent_disk_type_small))
+  update:
+    max_in_flight: 1
+    serial: true
+  jobs:
+  - name: private-image-repository
+    instances: 1
+    properties:
+      image_repository:
+        port: 5000
+        storage:
+          filesystem:
+            rootdirectory: /var/lib/docker-registry
+          delete_enabled: true
+        http:
+          http2_disabled: false
+        auth:
+          enabled: true
+          username: admin
+          password: $2y$05$4l7G8WyToNODwYwjHyXDnu5aB3wvKuIeipgoF.CUuGLzsaZkUEsxS
+
+# EOF
