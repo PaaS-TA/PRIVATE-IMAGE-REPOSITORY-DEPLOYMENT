@@ -1,7 +1,7 @@
 # STEMCELL
-stemcell_os: "ubuntu-trusty"
-stemcell_version: "3586.26"
-stemcell_alias: "trusty"
+stemcell_os: "ubuntu-xenial"
+stemcell_version: "315.64"
+stemcell_alias: "xenial"
 
 # VM_TYPE
 vm_type_small: "small"
